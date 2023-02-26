@@ -23,6 +23,7 @@ import (
 
 	. "github.com/petergtz/pegomock"
 	. "github.com/runatlantis/atlantis/testing"
+	"github.com/slack-go/slack"
 )
 
 var underlying *mocks.MockUnderlyingSlackClient
@@ -56,99 +57,99 @@ func TestTokenIsSet(t *testing.T) {
 	Equals(t, true, c.TokenIsSet())
 }
 
-/*
+
 // The next 2 tests are commented out because they currently fail using the Pegamock's
 // VerifyWasCalledOnce using variadic parameters.
 // See issue https://github.com/petergtz/pegomock/issues/112
-func TestPostMessage_Success(t *testing.T) {
-	t.Log("When apply succeeds, function should succeed and indicate success")
-	setup(t)
+// func TestPostMessage_Success(t *testing.T) {
+// 	t.Log("When apply succeeds, function should succeed and indicate success")
+// 	setup(t)
 
-	attachments := []slack.Attachment{{
-		Color: "good",
-		Text:  "Apply succeeded for <url|runatlantis/atlantis>",
-		Fields: []slack.AttachmentField{
-			{
-				Title: "Workspace",
-				Value: result.Workspace,
-				Short: true,
-			},
-			{
-				Title: "User",
-				Value: result.User.Username,
-				Short: true,
-			},
-			{
-				Title: "Directory",
-				Value: result.Directory,
-				Short: true,
-			},
-		},
-	}}
+// 	attachments := []slack.Attachment{{
+// 		Color: "good",
+// 		Text:  "Apply succeeded for <url|runatlantis/atlantis>",
+// 		Fields: []slack.AttachmentField{
+// 			{
+// 				Title: "Workspace",
+// 				Value: result.Workspace,
+// 				Short: true,
+// 			},
+// 			{
+// 				Title: "User",
+// 				Value: result.User.Username,
+// 				Short: true,
+// 			},
+// 			{
+// 				Title: "Directory",
+// 				Value: result.Directory,
+// 				Short: true,
+// 			},
+// 		},
+// 	}}
 
-	channel := "somechannel"
-	err := client.PostMessage(channel, result)
-	Ok(t, err)
-	underlying.VerifyWasCalledOnce().PostMessage(
-		channel,
-		slack.MsgOptionAsUser(true),
-		slack.MsgOptionText("", false),
-		slack.MsgOptionAttachments(attachments[0]),
-	)
+// 	channel := "somechannel"
+// 	err := client.PostMessage(channel, result)
+// 	Ok(t, err)
+// 	underlying.VerifyWasCalledOnce().PostMessage(
+// 		channel,
+// 		slack.MsgOptionAsUser(true),
+// 		slack.MsgOptionText("", false),
+// 		slack.MsgOptionAttachments(attachments[0]),
+// 	)
 
-	t.Log("When apply fails, function should succeed and indicate failure")
-	result.Success = false
-	attachments[0].Color = "danger"
-	attachments[0].Text = "Apply failed for <url|runatlantis/atlantis>"
+// 	t.Log("When apply fails, function should succeed and indicate failure")
+// 	result.Success = false
+// 	attachments[0].Color = "danger"
+// 	attachments[0].Text = "Apply failed for <url|runatlantis/atlantis>"
 
-	err = client.PostMessage(channel, result)
-	Ok(t, err)
-	underlying.VerifyWasCalledOnce().PostMessage(
-		channel,
-		slack.MsgOptionAsUser(true),
-		slack.MsgOptionText("", false),
-		slack.MsgOptionAttachments(attachments[0]),
-	)
-}
+// 	err = client.PostMessage(channel, result)
+// 	Ok(t, err)
+// 	underlying.VerifyWasCalledOnce().PostMessage(
+// 		channel,
+// 		slack.MsgOptionAsUser(true),
+// 		slack.MsgOptionText("", false),
+// 		slack.MsgOptionAttachments(attachments[0]),
+// 	)
+// }
 
-func TestPostMessage_Error(t *testing.T) {
-	t.Log("When the underlying slack client errors, an error should be returned")
-	setup(t)
+// func TestPostMessage_Error(t *testing.T) {
+// 	t.Log("When the underlying slack client errors, an error should be returned")
+// 	setup(t)
 
-	attachments := []slack.Attachment{{
-		Color: "good",
-		Text:  "Apply succeeded for <url|runatlantis/atlantis>",
-		Fields: []slack.AttachmentField{
-			{
-				Title: "Workspace",
-				Value: result.Workspace,
-				Short: true,
-			},
-			{
-				Title: "User",
-				Value: result.User.Username,
-				Short: true,
-			},
-			{
-				Title: "Directory",
-				Value: result.Directory,
-				Short: true,
-			},
-		},
-	}}
+// 	attachments := []slack.Attachment{{
+// 		Color: "good",
+// 		Text:  "Apply succeeded for <url|runatlantis/atlantis>",
+// 		Fields: []slack.AttachmentField{
+// 			{
+// 				Title: "Workspace",
+// 				Value: result.Workspace,
+// 				Short: true,
+// 			},
+// 			{
+// 				Title: "User",
+// 				Value: result.User.Username,
+// 				Short: true,
+// 			},
+// 			{
+// 				Title: "Directory",
+// 				Value: result.Directory,
+// 				Short: true,
+// 			},
+// 		},
+// 	}}
 
-	channel := "somechannel"
-	When(underlying.PostMessage(
-		channel,
-		slack.MsgOptionAsUser(true),
-		slack.MsgOptionText("", false),
-		slack.MsgOptionAttachments(attachments[0]),
-	)).ThenReturn("", "", errors.New(""))
+// 	channel := "somechannel"
+// 	When(underlying.PostMessage(
+// 		channel,
+// 		slack.MsgOptionAsUser(true),
+// 		slack.MsgOptionText("", false),
+// 		slack.MsgOptionAttachments(attachments[0]),
+// 	)).ThenReturn("", "", errors.New(""))
 
-	err := client.PostMessage(channel, result)
-	Assert(t, err != nil, "expected error")
-}
-*/
+// 	err := client.PostMessage(channel, result)
+// 	Assert(t, err != nil, "expected error")
+// }
+
 
 func setup(t *testing.T) {
 	RegisterMockTestingT(t)
@@ -169,6 +170,7 @@ func setup(t *testing.T) {
 		User: models.User{
 			Username: "lkysow",
 		},
+		Description: "This is an example for pull request description",
 		Success: true,
 	}
 }

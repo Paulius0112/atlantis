@@ -706,6 +706,7 @@ func (e *EventParser) ParseGitlabMergeRequest(mr *gitlab.MergeRequest, baseRepo 
 		BaseBranch: mr.TargetBranch,
 		State:      pullState,
 		BaseRepo:   baseRepo,
+		Description: mr.Description,
 	}
 }
 

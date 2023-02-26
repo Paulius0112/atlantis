@@ -177,6 +177,8 @@ type PullRequest struct {
 	State PullRequestState
 	// BaseRepo is the repository that the pull request will be merged into.
 	BaseRepo Repo
+	// Description is the description provided to the pull request
+	Description string
 }
 
 // PullRequestOptions is used to set optional paralmeters for PullRequest
