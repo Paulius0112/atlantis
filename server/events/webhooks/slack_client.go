@@ -112,6 +112,11 @@ func (d *DefaultSlackClient) createAttachments(applyResult ApplyResult) []slack.
 				Value: directory,
 				Short: true,
 			},
+			{
+				Title: "Description",
+				Value: applyResult.Pull.Body,
+				Short: true,
+			},
 		},
 	}
 	return []slack.Attachment{attachment}

@@ -169,6 +169,8 @@ type PullRequest struct {
 	// BaseBranch is the name of the base branch (the branch that the pull
 	// request is getting merged into).
 	BaseBranch string
+	// Body is the description of the pull request
+	Body string
 	// Author is the username of the pull request author.
 	Author string
 	// State will be one of Open or Closed.

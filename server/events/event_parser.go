@@ -465,6 +465,7 @@ func (e *EventParser) ParseGithubPullEvent(pullEvent *github.PullRequestEvent) (
 		err = errors.New("pull_request is null")
 		return
 	}
+
 	pull, baseRepo, headRepo, err = e.ParseGithubPull(pullEvent.PullRequest)
 	if err != nil {
 		return
@@ -531,6 +532,8 @@ func (e *EventParser) ParseGithubPull(pull *github.PullRequest) (pullModel model
 		return
 	}
 
+	body := pull.GetBody()
+
 	authorUsername := pull.User.GetLogin()
 	if authorUsername == "" {
 		err = errors.New("user.login is null")
@@ -565,6 +568,7 @@ func (e *EventParser) ParseGithubPull(pull *github.PullRequest) (pullModel model
 		State:      pullState,
 		BaseRepo:   baseRepo,
 		BaseBranch: baseBranch,
+		Body:       body,
 	}
 	return
 }
