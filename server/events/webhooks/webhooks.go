@@ -42,6 +42,7 @@ type ApplyResult struct {
 	User      models.User
 	Success   bool
 	Directory string
+	Description string
 }
 
 // MultiWebhookSender sends multiple webhooks for each one it's configured for.
